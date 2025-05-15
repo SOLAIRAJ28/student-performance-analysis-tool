@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Marks Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ddd; }
+        th { background-color: #4CAF50; color: white; }
+    </style>
+</head>
+<body>
+    <h2>Marks Report for {{ student.name }} (Roll No: {{ student.roll_number }})</h2>
+    {% if marks %}
+    <table>
+        <tr>
+            <th>Subject</th>
+            <th>Marks Obtained</th>
+            <th>Total Marks</th>
+            <th>Exam Date</th>
+            <th>Exam Type</th>
+        </tr>
+        {% for mark in marks %}
+        <tr>
+            <td>{{ mark.subject_name }}</td>
+            <td>{{ mark.marks_obtained }}</td>
+            <td>{{ mark.total_marks }}</td>
+            <td>{{ mark.exam_date }}</td>
+            <td>{{ mark.exam_type }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No marks available.</p>
+    {% endif %}
+    <a href="/dashboard">Back to Dashboard</a>
+</body>
+</html>

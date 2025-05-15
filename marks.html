@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Marks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        table {
+            width: 60%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        a:hover {
+            background-color: #005f73;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Marks for Student ID: {{ student_id }}</h2>
+    <table>
+        <tr>
+            <th>Subject Name</th>
+            <th>Marks</th>
+            <th>Exam Date</th>
+            <th>Exam Type</th>
+        </tr>
+        {% for mark in marks %}
+        <tr>
+            <td>{{ mark.subject_name }}</td>  <!-- Use dictionary keys here -->
+            <td>{{ mark.marks_obtained }}</td>  <!-- marks_obtained -->
+            <td>{{ mark.exam_date }}</td>  <!-- exam_date -->
+            <td>{{ mark.exam_type }}</td>  <!-- exam_type -->
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <a href="/dash2">Back</a>
+</body>
+
+</html>

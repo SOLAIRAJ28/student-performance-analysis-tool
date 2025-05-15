@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .navbar { background-color: #4CAF50; overflow: hidden; }
+        .navbar a { float: left; display: block; color: white; text-align: center; padding: 14px 16px; text-decoration: none; }
+        .navbar a.right { float: right; }
+        .navbar a:hover { background-color: #45a049; }
+        .content { padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
+        th { background-color: #4CAF50; color: white; }
+        .actions button { margin: 0 5px; padding: 5px 10px; background-color: #008CBA; color: white; border: none; cursor: pointer; }
+        .actions button:hover { background-color: #005f6b; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/teacher">Student Records</a>
+        <a href="/settings" class="right">Settings</a>
+        <a href="/logout" class="right">Logout</a>
+    </div>
+    <div class="content">
+        <h2>Welcome, Teacher!</h2>
+        <h3>Student Records:</h3>
+        {% if students %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Roll Number</th>
+                <th>Class</th>
+                <th>Section</th>
+                <th>Gender</th>
+                <th>Actions</th>
+            </tr>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.student_id }}</td>
+                <td>{{ student.name or 'N/A' }}</td>
+                <td>{{ student.roll_number or 'N/A' }}</td>
+                <td>{{ student.class or 'N/A' }}</td>
+                <td>{{ student.section or 'N/A' }}</td>
+                <td>{{ student.gender or 'N/A' }}</td>
+                <td class="actions">
+                    <button onclick="window.location.href='/subjects/{{ student.student_id }}'">Subjects</button>
+                    <button onclick="window.location.href='/marks/{{ student.student_id }}'">Marks</button>
+                    <button onclick="window.location.href='/attendance/{{ student.student_id }}'">Attendance</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>No student records found. Please check the database or contact the administrator.</p>
+        {% endif %}
+        <button onclick="window.location.href='/logout'" style="background-color: #f44336; color: white; padding: 10px 20px; border: none; cursor: pointer;">Logout</button>
+    </div>
+</body>
+</html>

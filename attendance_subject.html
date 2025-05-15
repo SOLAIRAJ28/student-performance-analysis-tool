@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subject Attendance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        h2 {
+            color: #333;
+        }
+        
+        .student-info {
+            background-color: #e9f7ef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: inline-block;
+            min-width: 300px;
+        }
+        
+        .student-info p {
+            margin: 5px 0;
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        table {
+            width: 70%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .present {
+            color: green;
+            font-weight: bold;
+        }
+        
+        .absent {
+            color: red;
+            font-weight: bold;
+        }
+        
+        .back-button {
+            margin: 20px;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <h2>Attendance Records</h2>
+    
+    <div class="student-info">
+        <p><strong>Name:</strong> {{ student_name }}</p>
+        <p><strong>Roll Number:</strong> {{ student_roll }}</p>
+        <p><strong>Subject:</strong> {{ subject_name }}</p>
+    </div>
+    
+    {% if not attendance %}
+        <p>No attendance records found for this student in the subject.</p>
+    {% else %}
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Subject</th>
+                <th>Status</th>
+            </tr>
+            {% for record in attendance %}
+            <tr>
+                <td>{{ record['date'].strftime('%Y-%m-%d') if record['date'] else record['date'] }}</td>
+                <td>{{ record['subject_name'] }}</td>
+                <td class="{{ 'present' if record['status'] == 'Present' else 'absent' }}">{{ record['status'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+    
+    <a href="/dash2" class="back-button">Back to  Dashboard</a>
+</body>
+</html>

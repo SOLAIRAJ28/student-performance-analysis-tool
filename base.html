@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Student Performance System{% endblock %}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .navbar { background-color: #4CAF50; overflow: hidden; }
+        .navbar a { float: left; display: block; color: white; text-align: center; padding: 14px 16px; text-decoration: none; }
+        .navbar a.right { float: right; }
+        .navbar a:hover { background-color: #45a049; }
+        .content { padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        {% if session.get('username') %}
+            <a href="/attendance/{{ session.get('user_id') }}">Attendance</a>
+            <a href="/marks_report">Marks</a>
+            <a href="/sap_history">SAP Submission History</a>
+            <a href="/logout" class="right">Logout</a>
+        {% else %}
+            <a href="/login" class="right">Login</a>
+        {% endif %}
+    </div>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

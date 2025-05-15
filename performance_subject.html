@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Performance</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    text-align: center;
+    padding: 40px;
+    color: white;
+}
+
+h2, h3 {
+    color: #222;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.container {
+    width: 75%;
+    margin: auto;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    color: #333;
+}
+
+img {
+    width: 45%;
+    margin: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease-in-out;
+}
+
+img:hover {
+    transform: scale(1.05);
+}
+
+.info {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #222;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.table-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+table {
+    width: 60%;
+    border-collapse: collapse;
+    background: rgba(230, 230, 250, 0.9);
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+td, th {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+    font-size: 1.1em;
+    color: #333;
+}
+
+th {
+    background: #6a11cb;
+    color: white;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Performance for {{ student[0] }} (Roll No: {{ student[1] }}) in {{ subject[0] }}</h2>
+        
+        <div class="table-container">
+            <table>
+                <tr>
+                    <th>Exam Type</th>
+                    <th>Marks Obtained</th>
+                    <th>Total Marks</th>
+                </tr>
+                {% for i in range(exam_types|length) %}
+                <tr>
+                    <td>{{ exam_types[i] }}</td>
+                    <td>{{ marks_obtained[i] }}</td>
+                    <td>{{ total_marks[i] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        
+    
+        <h3>Performance Graphs</h3>
+        <img src="{{ url_for('static', filename=bar_graph.split('/')[-1]) }}" alt="Bar Graph">
+        <img src="{{ url_for('static', filename=line_graph.split('/')[-1]) }}" alt="Line Graph">
+    </div>
+          
+</body>
+</html>

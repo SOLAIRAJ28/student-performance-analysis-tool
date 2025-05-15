@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #f1f1f1;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab.active {
+            background: #4CAF50;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .btn-primary {
+            background-color: #008CBA;
+            color: white;
+        }
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-success {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-logout {
+            background-color: #000;
+            color: white;
+            padding: 4px 8px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            float: right;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            border-radius: 8px;
+        }
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .alert.success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .alert.error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard
+            <h3><a href="/logout" class="btn-logout">Logout</a></h3>
+        </h1>
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('users')">User Management</div>
+            <div class="tab" onclick="openTab('students')">Student Management</div>
+            <div class="tab" onclick="openTab('subjects')">Subject Management</div>
+            <div class="tab" onclick="openTab('attendance')">Attendance Management</div>
+            <div class="tab" onclick="openTab('student_subjects_marks')">Student Subjects & Marks</div>
+            <div class="tab" onclick="openTab('sap_requests')">SAP Requests</div>
+            <div class="tab" onclick="openTab('system')">System Settings</div>
+        </div>
+        <!-- Users Tab -->
+        <div id="users" class="tab-content active">
+            <h2>User Management</h2>
+            <button class="btn btn-success" onclick="openEditModal('user', 'new')">Add New User</button>
+            <table id="usersTable">
+                <tr>
+                    <th>User ID</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.user_id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>
+                        <button class="btn btn-primary edit-user" data-id="{{ user.user_id }}" data-role="{{ user.role }}">Edit</button>
+                        <button class="btn btn-danger delete-user" data-id="{{ user.user_id }}" data-role="{{ user.role }}">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <!-- Students Tab -->
+        <div id="students" class="tab-content">
+            <h2>Student Management</h2>
+            <button class="btn btn-success" onclick="openEditModal('student', 'new')">Add New Student</button>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Roll Number</th>
+                    <th>Class</th>
+                    <th>Section</th>
+                    <th>Gender</th>
+                    <th>Actions</th>
+                </tr>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.student_id }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.roll_number }}</td>
+                    <td>{{ student.class }}</td>
+                    <td>{{ student.section }}</td>
+                    <td>{{ student.gender }}</td>
+                    <td>
+                        <button class="btn btn-primary edit-student" data-id="{{ student.student_id }}">Edit</button>
+                        <button class="btn btn-danger delete-student" data-id="{{ student.student_id }}">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <!-- Subjects Tab -->
+        <div id="subjects" class="tab-content">
+            <h2>Subject Management</h2>
+            <button class="btn btn-success" onclick="openEditModal('subject', 'new')">Add New Subject</button>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+                {% for subject in subjects %}
+                <tr>
+                    <td>{{ subject.subject_id }}</td>
+                    <td>{{ subject.subject_name }}</td>
+                    <td>
+                        <button class="btn btn-primary edit-subject" data-id="{{ subject.subject_id }}">Edit</button>
+                        <button class="btn btn-danger delete-subject" data-id="{{ subject.subject_id }}">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <!-- Attendance Tab -->
+        <div id="attendance" class="tab-content">
+            <h2>Attendance Management</h2>
+            <div class="form-group">
+                <label for="attendance_date">Select Date</label>
+                <input type="date" id="attendance_date" name="attendance_date" value="2025-04-18" required>
+            </div>
+            <div class="form-group">
+                <label for="subject_id">Select Subject</label>
+                <select id="subject_id" name="subject_id" required>
+                    <option value="">Select a subject</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject.subject_id }}">{{ subject.subject_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="loadAttendance()">Load Students</button>
+            <table id="attendanceTable">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Roll Number</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </table>
+        </div>
+        <!-- Student Subjects & Marks Tab -->
+        <div id="student_subjects_marks" class="tab-content">
+            <h2>Student Subjects & Marks Management</h2>
+            <h3>Assign Subjects to Student</h3>
+            <div class="form-group">
+                <label for="student_select">Select Student</label>
+                <select id="student_select" name="student_select" onchange="loadStudentSubjects()">
+                    <option value="">Select a student</option>
+                    {% for student in students %}
+                    <option value="{{ student.student_id }}">{{ student.name }} (Roll: {{ student.roll_number }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="subject_select">Select Subject</label>
+                <select id="subject_select" name="subject_select" multiple size="5">
+                    {% for subject in subjects %}
+                    <option value="{{ subject.subject_id }}">{{ subject.subject_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="btn btn-success" onclick="assignSubjects()">Assign Selected Subjects</button>
+            <h3>Current Subjects</h3>
+            <table id="studentSubjectsTable">
+                <tr>
+                    <th>Subject ID</th>
+                    <th>Subject Name</th>
+                    <th>Action</th>
+                </tr>
+            </table>
+            <h3>Enter Marks for Student</h3>
+            <div class="form-group">
+                <label for="marks_student_select">Select Student</label>
+                <select id="marks_student_select" name="marks_student_select" onchange="loadStudentMarks()">
+                    <option value="">Select a student</option>
+                    {% for student in students %}
+                    <option value="{{ student.student_id }}">{{ student.name }} (Roll: {{ student.roll_number }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="marks_subject_select">Select Subject</label>
+                <select id="marks_subject_select" name="marks_subject_select">
+                    <option value="">Select a subject</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="marks_obtained">Marks Obtained</label>
+                <input type="number" id="marks_obtained" name="marks_obtained" required>
+            </div>
+            <div class="form-group">
+                <label for="total_marks">Total Marks</label>
+                <input type="number" id="total_marks" name="total_marks" required>
+            </div>
+            <div class="form-group">
+                <label for="exam_date">Exam Date</label>
+                <input type="date" id="exam_date" name="exam_date" required>
+            </div>
+            <div class="form-group">
+                <label for="exam_type">Exam Type</label>
+                <input type="text" id="exam_type" name="exam_type" required>
+            </div>
+            <button class="btn btn-success" onclick="submitMarks()">Submit Marks</button>
+            <h3>Current Marks</h3>
+            <table id="studentMarksTable">
+                <tr>
+                    <th>Subject</th>
+                    <th>Marks Obtained</th>
+                    <th>Total Marks</th>
+                    <th>Exam Date</th>
+                    <th>Exam Type</th>
+                    <th>Action</th>
+                </tr>
+            </table>
+        </div>
+        <!-- SAP Requests Tab -->
+        <div id="sap_requests" class="tab-content">
+            <h2>SAP Requests Management</h2>
+            <table id="sapRequestsTable">
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Roll Number</th>
+                    <th>Date</th>
+                    <th>Event Type</th>
+                    <th>Conducted By</th>
+                    <th>Inside/Outside</th>
+                    <th>Location</th>
+                    <th>Prize</th>
+                    <th>Proof Link</th>
+                    <th>Actions</th>
+                </tr>
+                {% for req in sap_requests %}
+                <tr>
+                    <td>{{ req.student_id }}</td>
+                    <td>{{ req.name }}</td>
+                    <td>{{ req.roll_number }}</td>
+                    <td>{{ req.date }}</td>
+                    <td>{{ req.event_type }}</td>
+                    <td>{{ req.conducted_by }}</td>
+                    <td>{{ req.inside_outside }}</td>
+                    <td>{{ req.location }}</td>
+                    <td>{{ req.prize or '-' }}</td>
+                    <td>
+                        {% if req.proof_link %}
+                        <a href="{{ req.proof_link }}" target="_blank">View Proof</a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-success approve-sap" data-id="{{ req.id }}">Approve</button>
+                        <button class="btn btn-danger reject-sap" data-id="{{ req.id }}">Reject</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <!-- System Tab -->
+        <div id="system" class="tab-content">
+            <h2>System Settings</h2>
+            <form onsubmit="submitSystemSettings(event)">
+                <div class="form-group">
+                    <label for="system_name">System Name</label>
+                    <input type="text" id="system_name" name="system_name" value="{{ settings.system_name }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="default_password">Default Password for New Users</label>
+                    <input type="password" id="default_password" name="default_password" value="{{ settings.default_password }}" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Settings</button>
+            </form>
+        </div>
+        <div id="alertMessage" class="alert"></div>
+    </div>
+    <!-- Edit/Create Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editModal')">×</span>
+            <h2 id="modalTitle">Edit Record</h2>
+            <div id="modalFormContent"></div>
+        </div>
+    </div>
+    <!-- Approve SAP Modal -->
+    <div id="approveSapModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('approveSapModal')">×</span>
+            <h2>Approve SAP Request</h2>
+            <form onsubmit="approveSap(event)">
+                <div class="form-group">
+                    <label for="sap_points">SAP Points</label>
+                    <input type="number" id="sap_points" name="points" min="1" required>
+                </div>
+                <input type="hidden" id="sap_request_id" name="request_id">
+                <button type="submit" class="btn btn-success">Approve</button>
+            </form>
+        </div>
+    </div>
+    <!-- Reject SAP Modal -->
+    <div id="rejectSapModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('rejectSapModal')">×</span>
+            <h2>Reject SAP Request</h2>
+            <form onsubmit="rejectSap(event)">
+                <div class="form-group">
+                    <label for="rejection_reason">Rejection Reason</label>
+                    <textarea id="rejection_reason" name="rejection_reason" required></textarea>
+                </div>
+                <input type="hidden" id="reject_request_id" name="request_id">
+                <button type="submit" class="btn btn-danger">Reject</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        function openTab(tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`.tab[onclick="openTab('${tabName}')"]`).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            alert.textContent = message || (type === 'success' ? 'Operation successful' : 'An error occurred');
+            alert.className = `alert ${type}`;
+            alert.style.display = 'block';
+            if (type === 'success') {
+                setTimeout(() => { alert.style.display = 'none'; }, 3000);
+            }
+        }
+
+        function openEditModal(type, id, role = '') {
+            const modal = document.getElementById('editModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalFormContent = document.getElementById('modalFormContent');
+            
+            if (type === 'user') {
+                modalTitle.textContent = id === 'new' ? 'Add New User' : 'Edit User';
+                modalFormContent.innerHTML = `
+                    <form onsubmit="submitUser(event, '${id}')">
+                        <div class="form-group">
+                            <label for="user_id">User ID</label>
+                            <input type="text" id="user_id" name="user_id" ${id !== 'new' ? 'readonly' : ''} required>
+                        </div>
+                        <div class="form-group">
+                            <label for="username">Username Wrote: </label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" ${id === 'new' ? 'required' : ''}>
+                        </div>
+                        <div class="form-group">
+                            <label for="role">Role</label>
+                            <select id="role" name="role" required>
+                                <option value="admin">Admin</option>
+                                <option value="teacher">Teacher</option>
+                                <option value="student">Student</option>
+                            </select>
+                        </div>
+                        <input type="hidden" name="old_role" value="${role}">
+                        <button type="submit" class="btn btn-primary">${id === 'new' ? 'Create' : 'Update'}</button>
+                    </form>
+                `;
+                if (id !== 'new') {
+                    fetch(`/admin/get_user_data?user_id=${id}&role=${role}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('User data:', data);
+                            if (data.status === 'error') {
+                                showAlert(data.message, 'error');
+                            } else {
+                                document.getElementById('user_id').value = data.user_id;
+                                document.getElementById('username').value = data.username;
+                                document.getElementById('password').value = data.password;
+                                document.getElementById('role').value = data.role;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching user data:', error);
+                            showAlert('Error fetching user data', 'error');
+                        });
+                }
+            } else if (type === 'student') {
+                modalTitle.textContent = id === 'new' ? 'Add New Student' : 'Edit Student';
+                modalFormContent.innerHTML = `
+                    <form onsubmit="submitStudent(event, '${id}')">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="roll_number">Roll Number</label>
+                            <input type="text" id="roll_number" name="roll_number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="class">Class</label>
+                            <input type="text" id="class" name="class">
+                        </div>
+                        <div class="form-group">
+                            <label for="section">Section</label>
+                            <input type="text" id="section" name="section">
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" name="gender">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">${id === 'new' ? 'Create' : 'Update'}</button>
+                    </form>
+                `;
+                if (id !== 'new') {
+                    fetch(`/admin/get_student_data?id=${id}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Student data:', data);
+                            if (data.status === 'error') {
+                                showAlert(data.message, 'error');
+                            } else {
+                                document.getElementById('name').value = data.name;
+                                document.getElementById('roll_number').value = data.roll_number;
+                                document.getElementById('class').value = data.class;
+                                document.getElementById('section').value = data.section;
+                                document.getElementById('gender').value = data.gender;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching student data:', error);
+                            showAlert('Error fetching student data', 'error');
+                        });
+                }
+            } else if (type === 'subject') {
+                modalTitle.textContent = id === 'new' ? 'Add New Subject' : 'Edit Subject';
+                modalFormContent.innerHTML = `
+                    <form onsubmit="submitSubject(event, '${id}')">
+                        <div class="form-group">
+                            <label for="subject_name">Subject Name</label>
+                            <input type="text" id="subject_name" name="subject_name" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">${id === 'new' ? 'Create' : 'Update'}</button>
+                    </form>
+                `;
+                if (id !== 'new') {
+                    fetch(`/admin/get_subject_data?id=${id}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Subject data:', data);
+                            if (data.status === 'error') {
+                                showAlert(data.message, 'error');
+                            } else {
+                                document.getElementById('subject_name').value = data.subject_name;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching subject data:', error);
+                            showAlert('Error fetching subject data', 'error');
+                        });
+                }
+            }
+            modal.style.display = 'block';
+        }
+
+        function submitUser(event, id) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {
+                user_id: formData.get('user_id'),
+                username: formData.get('username'),
+                password: formData.get('password'),
+                role: formData.get('role'),
+                old_role: formData.get('old_role')
+            };
+
+            if (id === 'new' && !data.password) {
+                showAlert('Password is required for new users', 'error');
+                return;
+            }
+
+            const url = id === 'new' ? '/admin/create_user' : '/admin/update_user';
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('User response:', data);
+                    if (data.status === 'success') {
+                        showAlert(data.message, 'success');
+                        closeModal('editModal');
+                        loadUsersTable();
+                    } else {
+                        showAlert(data.message || 'Error submitting user data', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting user:', error);
+                    showAlert(error.message || 'Error submitting user data', 'error');
+                });
+        }
+
+        function submitStudent(event, id) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {
+                name: formData.get('name'),
+                roll_number: formData.get('roll_number'),
+                class: formData.get('class'),
+                section: formData.get('section'),
+                gender: formData.get('gender')
+            };
+            const url = id === 'new' ? '/admin/create_student' : `/admin/update_student/${id}`;
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Student response:', data);
+                    if (data.status === 'success') {
+                        showAlert(data.message, 'success');
+                        closeModal('editModal');
+                        location.reload();
+                    } else {
+                        showAlert(data.message || 'Error submitting student data', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting student:', error);
+                    showAlert(error.message || 'Error submitting student data', 'error');
+                });
+        }
+
+        function submitSubject(event, id) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = { subject_name: formData.get('subject_name') };
+            const url = id === 'new' ? '/admin/create_subject' : `/admin/update_subject/${id}`;
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Subject response:', data);
+                    if (data.status === 'success') {
+                        showAlert(data.message, 'success');
+                        closeModal('editModal');
+                        location.reload();
+                    } else {
+                        showAlert(data.message || 'Error submitting subject data', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting subject:', error);
+                    showAlert(error.message || 'Error submitting subject data', 'error');
+                });
+        }
+
+        function deleteRecord(type, id, role = '') {
+            if (!confirm(`Are you sure you want to delete this ${type}?`)) return;
+            const url = type === 'user' ? `/admin/delete_user?user_id=${id}&role=${role}` :
+                        type === 'student' ? `/admin/delete_student/${id}` :
+                        `/admin/delete_subject/${id}`;
+            fetch(url, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Delete response:', data);
+                    if (data.status === 'success') {
+                        showAlert(data.message, 'success');
+                        if (type === 'user') loadUsersTable();
+                        else location.reload();
+                    } else {
+                        showAlert(data.message || `Error deleting ${type}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting record:', error);
+                    showAlert(error.message || `Error deleting ${type}`, 'error');
+                });
+        }
+
+        function loadUsersTable() {
+            fetch('/admin/get_all_users')
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Users data:', data);
+                    const table = document.getElementById('usersTable');
+                    table.innerHTML = `
+                        <tr>
+                            <th>User ID</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    `;
+                    data.users.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.user_id}</td>
+                            <td>${user.username}</td>
+                            <td>${user.role}</td>
+                            <td>
+                                <button class="btn btn-primary edit-user" data-id="${user.user_id}" data-role="${user.role}">Edit</button>
+                                <button class="btn btn-danger delete-user" data-id="${user.user_id}" data-role="${user.role}">Delete</button>
+                            </td>
+                        `;
+                        table.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading users:', error);
+                    showAlert(error.message || 'Error loading users', 'error');
+                });
+        }
+
+        function loadStudentSubjects() {
+            const studentId = document.getElementById('student_select').value;
+            if (!studentId) {
+                document.getElementById('studentSubjectsTable').innerHTML = `
+                    <tr>
+                        <th>Subject ID</th>
+                        <th>Subject Name</th>
+                        <th>Action</th>
+                    </tr>
+                `;
+                return;
+            }
+            fetch(`/admin/get_student_subjects?student_id=${studentId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Student subjects:', data);
+                    const table = document.getElementById('studentSubjectsTable');
+                    table.innerHTML = `
+                        <tr>
+                            <th>Subject ID</th>
+                            <th>Subject Name</th>
+                            <th>Action</th>
+                        </tr>
+                    `;
+                    data.subjects.forEach(subject => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${subject.subject_id}</td>
+                            <td>${subject.subject_name}</td>
+                            <td>
+                                <button class="btn btn-danger" onclick="removeSubject(${studentId}, ${subject.subject_id})">Remove</button>
+                            </td>
+                        `;
+                        table.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading subjects:', error);
+                    showAlert(error.message || 'Error loading subjects', 'error');
+                });
+        }
+
+        function assignSubjects() {
+            const studentId = document.getElementById('student_select').value;
+            const subjectSelect = document.getElementById('subject_select');
+            const subjectIds = Array.from(subjectSelect.selectedOptions).map(option => option.value);
+            if (!studentId || subjectIds.length === 0) {
+                showAlert('Please select a student and at least one subject', 'error');
+                return;
+            }
+            fetch('/admin/assign_subjects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ student_id: studentId, subject_ids: subjectIds })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Assign subjects response:', data);
+                    if (data.status === 'success') {
+                        showAlert(data.message, 'success');
+                        loadStudentSubjects();
+                    } else {
+                        showAlert(data.message || 'Error assigning subjects', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error assigning subjects:', error);
+                    showAlert(error.message || 'Error assigning subjects', 'error');
+                });
+        }
+
+        function removeSubject(studentId, subjectId) {
+            if (!confirm('Are you sure you want to remove this subject?')) return;
+            fetch('/admin/remove_subject', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ student_id: studentId, subject_id: subjectId })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Remove subject response:', data);
+                    if (data.status === 'success') {
+                        showAlert(data.message, 'success');
+                        loadStudentSubjects();
+                    } else {
+                        showAlert(data.message || 'Error removing subject', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error removing subject:', error);
+                    showAlert(error.message || 'Error removing subject', 'error');
+                });
+        }
+
+        function loadStudentMarks() {
+            const studentId = document.getElementById('marks_student_select').value;
+            const subjectSelect = document.getElementById('marks_subject_select');
+            if (!studentId) {
+                subjectSelect.innerHTML = '<option value="">Select a subject</option>';
+                document.getElementById('studentMarksTable').innerHTML = `
+                    <tr>
+                        <th>Subject</th>
+                        <th>Marks Obtained</th>
+                        <th>Total Marks</th>
+                        <th>Exam Date</th>
+                        <th>Exam Type</th>
+                        <th>Action</th>
+                    </tr>
+                `;
+                return;
+            }
+            fetch(`/admin/get_student_subjects?student_id=${studentId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Student subjects for marks:', data);
+                    subjectSelect.innerHTML = '<option value="">Select a subject</option>';
+                    data.subjects.forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject.subject_id;
+                        option.textContent = subject.subject_name;
+                        subjectSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading subjects:', error);
+                    showAlert(error.message || 'Error loading subjects', 'error');
+                });
+
+            fetch(`/admin/get_marks/${studentId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Student marks:', data);
+                    const table = document.getElementById('studentMarksTable');
+                    table.innerHTML = `
+                        <tr>
+                            <th>Subject</th>
+                            <th>Marks Obtained</th>
+                            <th>Total Marks</th>
+                            <th>Exam Date</th>
+                            <th>Exam Type</th>
+                            <th>Action</th>
+                        </tr>
+                    `;
+                    data.marks.forEach(mark => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${mark.subject_name}</td>
+                            <td>${mark.marks_obtained}</td>
+                            <td>${mark.total_marks}</td>
+                            <td>${mark.exam_date}</td>
+                            <td>${mark.exam_type}</td>
+                            <td>
+                                <button class="btn btn-danger" onclick="deleteMark(${mark.id})">Delete</button>
+                            </td>
+                        `;
+                        table.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading marks:', error);
+                    showAlert(error.message || 'Error loading marks', 'error');
+                });
+        }
+
+        function submitMarks() {
+            const studentId = document.getElementById('marks_student_select').value;
+            const subjectId = document.getElementById('marks_subject_select').value;
+            const marksObtained = document.getElementById('marks_obtained').value;
+            const totalMarks = document.getElementById('total_marks').value;
+            const examDate = document.getElementById('exam_date').value;
+            const examType = document.getElementById('exam_type').value;
+            if (!studentId || !subjectId || !marksObtained || !totalMarks || !examDate || !examType) {
+                showAlert('All fields are required', 'error');
+                return;
+            }
+            fetch('/admin/create_mark', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    subject_id: subjectId,
+                    marks_obtained: marksObtained,
+                    total_marks: totalMarks,
+                    exam_date: examDate,
+                    exam_type: examType
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Marks response:', data);
+                    if (data.status === 'success') {
+                        showAlert(data.message, 'success');
+                        document.getElementById('marks_obtained').value = '';
+                        document.getElementById('total_marks').value = '';
+                        document.getElementById('exam_date').value = '';
+                        document.getElementById('exam_type').value = '';
+                        loadStudentMarks();
+                    } else {
+                        showAlert(data.message || 'Error submitting marks', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting marks:', error);
+                    showAlert(error.message || 'Error submitting marks', 'error');
+                });
+        }
+
+        function deleteMark(id) {
+            if (!confirm('Are you sure you want to delete this mark?')) return;
+            fetch(`/admin/delete_mark/${id}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Delete mark response:', data);
+                    if (data.status === 'success') {
+                        showAlert(data.message, 'success');
+                        loadStudentMarks();
+                    } else {
+                        showAlert(data.message || 'Error deleting mark', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting mark:', error);
+                    showAlert(error.message || 'Error deleting mark', 'error');
+                });
+        }
+
+        function loadAttendance() {
+            const date = document.getElementById('attendance_date').value;
+            const subjectId = document.getElementById('subject_id').value;
+            if (!date || !subjectId) {
+                showAlert('Please select a date and subject', 'error');
+                return;
+            }
+            fetch(`/admin/get_students_for_attendance?date=${date}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Attendance data:', data);
+                    const table = document.getElementById('attendanceTable');
+                    table.innerHTML = `
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Roll Number</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    `;
+                    data.students.forEach(student => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${student.id}</td>
+                            <td>${student.name}</td>
+                            <td>${student.roll_number}</td>
+                            <td>${student.status}</td>
+                            <td>
+                                <select onchange="updateAttendance(${student.id}, '${date}', ${subjectId}, this.value)">
+                                    <option value="Present" ${student.status === 'Present' ? 'selected' : ''}>Present</option>
+                                    <option value="Absent" ${student.status === 'Absent' ? 'selected' : ''}>Absent</option>
+                                </select>
+                            </td>
+                        `;
+                        table.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading attendance:', error);
+                    showAlert(error.message || 'Error loading attendance', 'error');
+                });
+        }
+
+        function updateAttendance(studentId, date, subjectId, status) {
+            fetch('/admin/update_attendance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ student_id: studentId, date, status, subject_id: subjectId })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Attendance response:', data);
+                    if (data.status === 'success') {
+                        showAlert(data.message, 'success');
+                    } else {
+                        showAlert(data.message || 'Error updating attendance', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating attendance:', error);
+                    showAlert(error.message || 'Error updating attendance', 'error');
+                });
+        }
+
+        function openApproveModal(requestId) {
+            document.getElementById('sap_request_id').value = requestId;
+            document.getElementById('approveSapModal').style.display = 'block';
+        }
+
+        function openRejectModal(requestId) {
+            document.getElementById('reject_request_id').value = requestId;
+            document.getElementById('rejectSapModal').style.display = 'block';
+        }
+
+        function approveSap(event) {
+            event.preventDefault();
+            const requestId = document.getElementById('sap_request_id').value;
+            const points = document.getElementById('sap_points').value;
+            if (!points || parseInt(points) <= 0) {
+                showAlert('Please enter valid SAP points', 'error');
+                return;
+            }
+            fetch(`/admin/approve_sap/${requestId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ points: parseInt(points) })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Approve SAP response:', data);
+                    if (data.status === 'success') {
+                        showAlert(data.message, 'success');
+                        closeModal('approveSapModal');
+                        document.getElementById('sap_points').value = '';
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showAlert(data.message || 'Error approving SAP request', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error approving SAP:', error);
+                    showAlert(error.message || 'Error approving SAP request', 'error');
+                });
+        }
+
+        function rejectSap(event) {
+            event.preventDefault();
+            const requestId = document.getElementById('reject_request_id').value;
+            const rejectionReason = document.getElementById('rejection_reason').value;
+            if (!rejectionReason.trim()) {
+                showAlert('Please provide a rejection reason', 'error');
+                return;
+            }
+            fetch(`/admin/reject_sap/${requestId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rejection_reason: rejectionReason.trim() })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'HTTP error');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Reject SAP response:', data);
+                    if (data.status === 'success') {
+                        showAlert(data.message, 'success');
+                        closeModal('rejectSapModal');
+                        document.getElementById('rejection_reason').value = '';
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showAlert(data.message || 'Error rejecting SAP request', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error rejecting SAP:', error);
+                    showAlert(error.message || 'Error rejecting SAP request', 'error');
+                });
+        }
+
+        function submitSystemSettings(event) {
+            event.preventDefault();
+            showAlert('System settings updated (client-side only for demo)', 'success');
+        }
+
+
+        document.addEventListener('click', function(event) {
+            // Handle edit user clicks
+            if (event.target.classList.contains('edit-user')) {
+                const userId = event.target.dataset.id;
+                const userRole = event.target.dataset.role;
+                openEditModal('user', userId, userRole);
+            }
+            
+            // Handle delete user clicks
+            if (event.target.classList.contains('delete-user')) {
+                const userId = event.target.dataset.id;
+                const userRole = event.target.dataset.role;
+                deleteRecord('user', userId, userRole);
+            }
+        });
+        
+        // Add event listeners for all buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            // User management buttons
+
+            // Student management buttons
+            document.querySelectorAll('.edit-student').forEach(button => {
+                button.addEventListener('click', function() {
+                    openEditModal('student', this.dataset.id);
+                });
+            });
+
+            document.querySelectorAll('.delete-student').forEach(button => {
+                button.addEventListener('click', function() {
+                    deleteRecord('student', this.dataset.id);
+                });
+            });
+
+            // Subject management buttons
+            document.querySelectorAll('.edit-subject').forEach(button => {
+                button.addEventListener('click', function() {
+                    openEditModal('subject', this.dataset.id);
+                });
+            });
+
+            document.querySelectorAll('.delete-subject').forEach(button => {
+                button.addEventListener('click', function() {
+                    deleteRecord('subject', this.dataset.id);
+                });
+            });
+
+            // SAP request buttons
+            document.querySelectorAll('.approve-sap').forEach(button => {
+                button.addEventListener('click', function() {
+                    openApproveModal(this.dataset.id);
+                });
+            });
+
+            document.querySelectorAll('.reject-sap').forEach(button => {
+                button.addEventListener('click', function() {
+                    openRejectModal(this.dataset.id);
+                });
+            });
+        });
+
+        // Load users table on page load
+        window.onload = loadUsersTable;
+    </script>
+</body>
+</html>

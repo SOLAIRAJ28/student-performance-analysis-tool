@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html>
+<head><title>Subjects</title><style>body { font-family: Arial; margin: 20px; } ul { list-style-type: none; }</style></head>
+<body><h2>Subjects for Student ID {{ student_id }}</h2><ul>{% for subject in subjects %}<li>{{ subject.subject_name }}</li>{% endfor %}</ul><a href="/teacher">Back</a></body>
+</html>

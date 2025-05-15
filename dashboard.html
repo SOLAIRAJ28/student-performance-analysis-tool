@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #4CAF50;
+            overflow: hidden;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .navbar a:hover {
+            background-color: #45a049;
+        }
+        .navbar a.logout {
+            float: right;
+            background-color: #d9534f;
+        }
+        .navbar a.logout:hover {
+            background-color: #c9302c;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 20 Culturalpx auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .alert.success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .alert.error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/attendance/{{ session.user_id }}">Attendance</a>
+        <a href="/marks_report">Marks</a>
+        <a href="/sap_history">SAP Submission History</a>
+        <a href="/logout" class="logout">Logout</a>
+    </div>
+    <div class="container">
+        <h1>Student Dashboard</h1>
+        <div class="section">
+            <h2>Welcome, {{ student.name }} (Roll Number: {{ student.roll_number }})</h2>
+            <p>Total SAP Points: {{ total_sap_points }}</p>
+        </div>
+        <div class="section">
+            <h2>Submit SAP Event</h2>
+            <form id="sapForm" method="POST" action="/submit_sap">
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="event_type">Type of Event</label>
+                    <input type="text" id="event_type" name="event_type" required>
+                </div>
+                <div class="form-group">
+                    <label for="conducted_by">Conducted By</label>
+                    <input type="text" id="conducted_by" name="conducted_by" required>
+                </div>
+                <div class="form-group">
+                    <label for="inside_outside">Inside/Outside</label>
+                    <select id="inside_outside" name="inside_outside" required>
+                        <option value="Inside">Inside</option>
+                        <option value="Outside">Outside</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="prize">Prize (Optional)</label>
+                    <input type="text" id="prize" name="prize">
+                </div>
+                <div class="form-group">
+                    <label for="proof_link">Proof (Drive Link, Optional)</label>
+                    <input type="url" id="proof_link" name="proof_link">
+                </div>
+                <button type="submit">Submit SAP</button>
+            </form>
+            <div id="formMessage" class="alert" style="display: none;"></div>
+        </div>
+        <div class="section">
+            <h2>Marks</h2>
+            {% if marks %}
+                <table>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Marks Obtained</th>
+                        <th>Total Marks</th>
+                        <th>Exam Date</th>
+                        <th>Exam Type</th>
+                    </tr>
+                    {% for mark in marks %}
+                    <tr>
+                        <td>{{ mark.subject_name }}</td>
+                        <td>{{ mark.marks_obtained }}</td>
+                        <td>{{ mark.total_marks }}</td>
+                        <td>{{ mark.exam_date }}</td>
+                        <td>{{ mark.exam_type }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No marks available.</p>
+            {% endif %}
+        </div>
+        <div class="section">
+            <h2>Latest Attendance</h2>
+            {% if attendance %}
+                <table>
+                    <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                    </tr>
+                    <tr>
+                        <td>{{ attendance.date }}</td>
+                        <td>{{ attendance.subject_name }}</td>
+                        <td>{{ attendance.status }}</td>
+                    </tr>
+                </table>
+            {% else %}
+                <p>No attendance records available.</p>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        document.getElementById('sapForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('/submit_sap', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageDiv = document.getElementById('formMessage');
+                messageDiv.style.display = 'block';
+                if (data.message.includes('successfully')) {
+                    messageDiv.className = 'alert success';
+                    messageDiv.textContent = data.message;
+                    document.getElementById('sapForm').reset();
+                } else {
+                    messageDiv.className = 'alert error';
+                    messageDiv.textContent = data.message;
+                }
+                setTimeout(() => { messageDiv.style.display = 'none'; }, 5000);
+            })
+            .catch(error => {
+                const messageDiv = document.getElementById('formMessage');
+                messageDiv.style.display = 'block';
+                messageDiv.className = 'alert error';
+                messageDiv.textContent = 'Error submitting form';
+                setTimeout(() => { messageDiv.style.display = 'none'; }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>
